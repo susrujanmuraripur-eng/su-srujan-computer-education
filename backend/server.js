@@ -201,7 +201,7 @@ Remember:
 
 app.use(express.static(path.join(__dirname, "..")));
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(
     `Su-Srujan AI Tutor running at http://localhost:${PORT}`
   );
