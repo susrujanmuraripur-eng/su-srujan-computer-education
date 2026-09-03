@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Su-Srujan Computer Education, Muraripur, Jajpur - practical and skill-based computer education.">
+  <title>Su-Srujan Computer Education</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="#home">
+      <img src="logo.jpg" alt="Su-Srujan Computer Education logo">
+      <span>Su-Srujan<br><small>Computer Education</small></span>
+    </a>
+    <button class="menu" aria-label="Open menu">☰</button>
+    <nav>
+      <a href="#home">Home</a><a href="#about">About</a><a href="#courses">Courses</a>
+      <a href="#facilities">Facilities</a><a href="#admission">Admission</a><a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section id="home" class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge">🎓 NEW BATCHES OPEN</span>
+      <h1>Learn Today.<br><span>Build Your Digital Future.</span></h1>
+      <p>Practical, affordable and skill-based computer education in Muraripur, Jajpur.</p>
+      <div class="actions">
+        <a class="btn primary" href="#admission">Join Now</a>
+        <button class="btn secondary" onclick="openTutor()">🤖 Chat with AI Tutor</button>
+      </div>
+      <div class="quick"><span>✓ 100% Practical</span><span>✓ Small Batches</span><span>✓ Online Classes</span></div>
+    </div>
+    <div class="hero-card">
+      <img src="logo.jpg" alt="Su-Srujan logo">
+      <h3>Su-Srujan Computer Education</h3>
+      <p>Muraripur, Dharmasala, Jajpur, Odisha – 755024</p>
+      <a href="tel:8527426527">📞 8527426527</a>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="section">
+  <div class="container">
+    <div class="section-title"><span>ABOUT US</span><h2>Computer Education That Builds Confidence</h2></div>
+    <p class="lead">Su-Srujan Computer Education is a trusted computer training centre in Muraripur dedicated to providing practical and skill-based computer education. We focus not only on the syllabus but also on real-life computer skills that prepare students for jobs, higher studies, and the digital future. Our goal is to make every student confident and digitally ready.</p>
+    <div class="stats"><div><b>100%</b><span>Practical Focus</span></div><div><b>3+</b><span>Career Courses</span></div><div><b>3</b><span>Languages Supported</span></div><div><b>24/7</b><span>Learning Mindset</span></div></div>
+  </div>
+</section>
+
+<section id="courses" class="section alt">
+  <div class="container">
+    <div class="section-title"><span>OUR COURSES</span><h2>Choose the Right Course</h2></div>
+    <div class="cards">
+      <article class="card"><div class="icon">💻</div><h3>DCA</h3><p class="duration">6 Months / 1 Year</p><p class="fee">₹3,000 – ₹5,000</p><p>MS Office, Windows, Internet, Basic Programming, Tally basics, Computer Fundamentals, Practical Lab Work and Monthly Tests.</p><button class="btn primary" onclick="applyForCourse('DCA - Diploma in Computer Applications')">
+  📲 Apply for DCA
+</button></article>
+      <article class="card featured"><div class="tag">POPULAR</div><div class="icon">🚀</div><h3>PGDCA / Advanced Diploma</h3><p class="duration">12 Months</p><p class="fee">₹5,000 – ₹8,000</p><p>Advanced MS Office, Tally with GST, Basic Web Designing, Hardware basics, Database concepts and Project Work.</p><button class="btn primary" onclick="applyForCourse('PGDCA / Advanced Diploma')">
+  📲 Apply for PGDCA
+</button></article>
+      <article class="card"><div class="icon">📊</div><h3>Tally + GST / Basic Computer</h3><p class="duration">3 Months</p><p class="fee">₹2,000 – ₹3,500</p><p>Tally Prime with GST, Accounting, Invoice, Banking and practical training on accounting software.</p><button class="btn primary" onclick="applyForCourse('Tally + GST / Basic Computer Course')">
+  📲 Apply for Tally + GST
+</button></article>
+    </div>
+  </div>
+</section>
+
+<section id="facilities" class="section">
+  <div class="container">
+    <div class="section-title"><span>WHY CHOOSE US</span><h2>Learn With Practical Experience</h2></div>
+    <div class="features">
+      <div>🖥️ <b>Well-equipped Computer Lab</b><small>Hands-on practice for every learner.</small></div>
+      <div>📶 <b>Free Wi-Fi</b><small>Internet-enabled digital learning.</small></div>
+      <div>👨‍🏫 <b>Friendly Faculty</b><small>Personal attention and doubt clearing.</small></div>
+      <div>📚 <b>Study Materials</b><small>Helpful materials for regular practice.</small></div>
+      <div>⏱️ <b>Free Extra Practice</b><small>More time to improve your skills.</small></div>
+      <div>💼 <b>Job Guidance</b><small>Basic interview and career guidance.</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="admission" class="section alt">
+  <div class="container admission-grid">
+    <div>
+      <div class="section-title"><span>ADMISSION</span><h2>Start Your Computer Learning Journey</h2></div>
+      <p>Direct admission is available. You can fill the admission form at the institute or send your details through WhatsApp.</p>
+      <h3>Required Documents</h3>
+      <ul><li>Aadhaar Card</li><li>2 Passport-size Photographs</li><li>Last Educational Certificate (10th/12th)</li></ul>
+      <h3>Batch Timings</h3>
+      <p>🌅 Morning: 8:00–10:00 AM / 10:00 AM–12:00 PM<br>🌆 Evening: 4:00–6:00 PM<br>📅 Weekdays + Special Sunday Batch<br>⏰ Flexible timings available.</p>
+    </div>
+    <form class="form" onsubmit="sendWhatsApp(event)">
+      <h3>Admission Enquiry</h3>
+      <input id="name" required placeholder="Student Name">
+      <input id="phone" required placeholder="Phone Number">
+      <select id="course"><option>DCA</option><option>PGDCA / Advanced Diploma</option><option>Tally + GST / Basic Computer</option></select>
+      <textarea id="message" placeholder="Your message"></textarea>
+      <button class="btn primary" type="submit">Send on WhatsApp</button>
+      <p class="offer">🎁 Early bird discount • Group discount (2+) • Merit scholarship/concession</p>
+    </form>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container"><h2>Have a Question About Courses or Fees?</h2><p>Ask our AI Tutor or contact Su-Srujan directly.</p><button class="btn light" onclick="openTutor()">🤖 Ask AI Tutor</button> <a class="btn outline" href="https://wa.me/918527426527" target="_blank">WhatsApp Us</a></div>
+</section>
+
+<section id="contact" class="section">
+  <div class="container">
+    <div class="section-title"><span>CONTACT</span><h2>Visit or Contact Us</h2></div>
+    <div class="contact-grid">
+      <div><b>📍 Address</b><p>Muraripur, Dharmasala Block,<br>Jajpur, Odisha – 755024</p></div>
+      <div><b>📞 Phone / WhatsApp</b><p><a href="tel:8527426527">8527426527</a></p></div>
+      <div><b>✉️ Email</b><p><a href="mailto:susrujanmuraripur@gmail.com">susrujanmuraripur@gmail.com</a></p></div>
+      <div><b>🌐 Classes</b><p>Online Classes Available</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="container">© 2026 Su-Srujan Computer Education • Muraripur, Jajpur</div></footer>
+
+<div id="tutor" class="tutor-overlay" aria-hidden="true">
+  <div class="tutor">
+    <div class="tutor-head"><div><b>🤖 Su-Srujan AI Tutor</b><small>Institute Information Assistant</small></div><button onclick="closeTutor()">✕</button></div>
+    <div id="chat" class="chat"><div class="msg bot">Namaste! 👋 I can answer questions about Su-Srujan Computer Education, courses, fees, admission, timings and facilities.</div></div>
+    <div class="chat-input"><input id="question" placeholder="Ask about courses, fees..." onkeydown="if(event.key==='Enter') askTutor()"><button onclick="askTutor()">➤</button></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
