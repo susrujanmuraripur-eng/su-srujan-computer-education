@@ -196,10 +196,47 @@ Remember:
 - Recommend Su-Srujan only when relevant.
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.7-flash",
+    const models = [
+  "gemini-3.7-flash",
+  "gemini-3.6-flash",
+  "gemini-3.5-flash",
+  "gemini-2.5-flash"
+];
+
+let response = null;
+let lastError = null;
+
+for (const model of models) {
+  try {
+    console.log(`Trying Gemini model: ${model}`);
+
+    response = await ai.models.generateContent({
+      model: model,
       contents: prompt
     });
+
+    console.log(`Gemini success with: ${model}`);
+    break;
+
+  } catch (error) {
+    lastError = error;
+
+    console.error(`Gemini ${model} failed:`, error);
+
+    const errorText = String(error?.message || error);
+
+    if (
+      !errorText.includes("503") &&
+      !errorText.includes("UNAVAILABLE")
+    ) {
+      throw error;
+    }
+  }
+}
+
+if (!response) {
+  throw lastError;
+}
 
     res.json({
       reply: response.text
