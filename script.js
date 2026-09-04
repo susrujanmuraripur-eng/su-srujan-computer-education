@@ -59,12 +59,20 @@ async function askTutor() {
     const q = question.toLowerCase();
 
     if (
-      q.includes("admission") ||
-      q.includes("join") ||
-      q.includes("enroll") ||
-      q.includes("admission lena") ||
-      q.includes("join karna")
-    ) {
+  q.includes("admission") ||
+  q.includes("join") ||
+  q.includes("enroll") ||
+  q.includes("admission lena") ||
+  q.includes("join karna") ||
+  q.includes("join kariba") ||
+  q.includes("join karibi") ||
+  q.includes("join karibaku") ||
+  q.includes("admission nebaku") ||
+  q.includes("admission nebi") ||
+  q.includes("admission naba") ||
+  q.includes("course re padhibi") ||
+  q.includes("course re padh")
+) {
       chat.insertAdjacentHTML(
         "beforeend",
         `
