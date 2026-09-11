@@ -250,7 +250,78 @@ if (!response) {
     });
   }
 });
+// YouTube Latest Videos API
+app.get("/api/youtube-videos", async (req, res) => {
+  try {
+    const apiKey = process.env.YOUTUBE_API_KEY;
 
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "YouTube API key is missing."
+      });
+    }
+
+    // Get channel information and uploads playlist
+    const channelUrl =
+      "https://www.googleapis.com/youtube/v3/channels" +
+      "?part=contentDetails" +
+      "&forHandle=@SuSrujanMuraripur" +
+      "&key=" + encodeURIComponent(apiKey);
+
+    const channelResponse = await fetch(channelUrl);
+    const channelData = await channelResponse.json();
+
+    if (!channelResponse.ok || !channelData.items?.length) {
+      console.error("YouTube Channel Error:", channelData);
+
+      return res.status(500).json({
+        error: "YouTube channel could not be found."
+      });
+    }
+
+    const uploadsPlaylistId =
+      channelData.items[0].contentDetails.relatedPlaylists.uploads;
+
+    // Get latest uploaded videos
+    const videosUrl =
+      "https://www.googleapis.com/youtube/v3/playlistItems" +
+      "?part=snippet,contentDetails" +
+      "&playlistId=" + encodeURIComponent(uploadsPlaylistId) +
+      "&maxResults=3" +
+      "&key=" + encodeURIComponent(apiKey);
+
+    const videosResponse = await fetch(videosUrl);
+    const videosData = await videosResponse.json();
+
+    if (!videosResponse.ok) {
+      console.error("YouTube Videos Error:", videosData);
+
+      return res.status(500).json({
+        error: "YouTube videos could not be loaded."
+      });
+    }
+
+    const videos = (videosData.items || []).map(item => ({
+      videoId: item.contentDetails.videoId,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      thumbnail:
+        item.snippet.thumbnails?.high?.url ||
+        item.snippet.thumbnails?.medium?.url ||
+        item.snippet.thumbnails?.default?.url,
+      publishedAt: item.snippet.publishedAt
+    }));
+
+    res.json({ videos });
+
+  } catch (error) {
+    console.error("YouTube API Error:", error);
+
+    res.status(500).json({
+      error: "YouTube videos could not be loaded."
+    });
+  }
+});
 app.use(express.static(path.join(__dirname, "..")));
 
 app.listen(PORT, "0.0.0.0", () => {
