@@ -167,3 +167,48 @@ function applyForCourse(courseName) {
     "_blank"
   );
 }
+// Load latest YouTube videos
+async function loadLatestYouTubeVideos() {
+  try {
+    const response = await fetch("/api/youtube-videos");
+    const data = await response.json();
+
+    if (!data.videos || data.videos.length === 0) {
+      console.log("No YouTube videos found.");
+      return;
+    }
+
+    const youtubeVideoBox = document.querySelector(".youtube-video");
+
+    if (!youtubeVideoBox) {
+      console.log("YouTube video container not found.");
+      return;
+    }
+
+    youtubeVideoBox.innerHTML = "";
+
+    data.videos.forEach(video => {
+      const videoBox = document.createElement("div");
+
+      videoBox.className = "youtube-latest-video";
+
+      videoBox.innerHTML = `
+        <iframe
+          src="https://www.youtube.com/embed/${video.videoId}"
+          title="${escapeHtml(video.title)}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      `;
+
+      youtubeVideoBox.appendChild(videoBox);
+    });
+
+  } catch (error) {
+    console.error("Could not load YouTube videos:", error);
+  }
+}
+
+// Load videos when website opens
+document.addEventListener("DOMContentLoaded", loadLatestYouTubeVideos);
