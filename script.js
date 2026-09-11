@@ -187,19 +187,45 @@ async function loadLatestYouTubeVideos() {
 
     youtubeVideoBox.innerHTML = "";
 
-    data.videos.forEach(video => {
+    // Show maximum 3 latest videos
+    data.videos.slice(0, 3).forEach(video => {
       const videoBox = document.createElement("div");
 
       videoBox.className = "youtube-latest-video";
 
+      const uploadDate = video.publishedAt
+        ? new Date(video.publishedAt).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+          })
+        : "";
+
       videoBox.innerHTML = `
-        <iframe
-          src="https://www.youtube.com/embed/${video.videoId}"
-          title="${escapeHtml(video.title)}"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
+        <div class="youtube-iframe-wrapper">
+          <iframe
+            src="https://www.youtube.com/embed/${video.videoId}"
+            title="${escapeHtml(video.title)}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <div class="youtube-video-info">
+          <h3>${escapeHtml(video.title)}</h3>
+
+          <p class="youtube-date">
+            📅 ${uploadDate}
+          </p>
+
+          <a
+            href="https://www.youtube.com/watch?v=${video.videoId}"
+            target="_blank"
+            class="youtube-watch-btn">
+            ▶ Watch on YouTube
+          </a>
+        </div>
       `;
 
       youtubeVideoBox.appendChild(videoBox);
