@@ -193,3 +193,74 @@
     font-size: 17px;
   }
 }
+/* YouTube cards - final professional layout */
+
+.youtube-video {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.youtube-latest-video {
+  width: 100%;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.youtube-iframe-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.youtube-iframe-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.youtube-video-info {
+  padding: 18px;
+}
+
+.youtube-video-info h3 {
+  font-size: 17px;
+  line-height: 1.45;
+  margin: 0 0 10px;
+  min-height: 74px;
+}
+
+.youtube-date {
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+
+.youtube-watch-btn {
+  display: inline-block;
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+  .youtube-video {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+  .youtube-video {
+    grid-template-columns: 1fr;
+  }
+
+  .youtube-video-info h3 {
+    min-height: auto;
+  }
+}
