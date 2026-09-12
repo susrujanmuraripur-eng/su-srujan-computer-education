@@ -16,6 +16,40 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
+// Supabase connection
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+async function saveTutorUser(name, phone, email) {
+  try {
+    if (!name && !phone && !email) return;
+
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/tutor_users`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          name: name || null,
+          phone: phone || null,
+          email: email || null
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Supabase Save Error:", errorText);
+    }
+  } catch (error) {
+    console.error("Supabase Connection Error:", error);
+  }
+}
 const instituteInfo = `
 You are "Su-Srujan AI Tutor", the friendly AI assistant for
 Su-Srujan Computer Education.
