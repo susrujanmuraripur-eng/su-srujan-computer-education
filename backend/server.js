@@ -12,44 +12,187 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+
+// =====================================
+// GEMINI AI
+// =====================================
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
-// Supabase connection
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// =====================================
+// SUPABASE
+// =====================================
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+
+// Save Tutor User
 async function saveTutorUser(name, phone, email) {
+
   try {
-    if (!name && !phone && !email) return;
+
+    if (!name && !phone && !email) {
+      return;
+    }
+
+
+    // ---------------------------------
+    // Check whether user already exists
+    // ---------------------------------
+
+    let existingUser = null;
+
+
+    if (email) {
+
+      const checkUrl =
+        `${SUPABASE_URL}/rest/v1/tutor_users` +
+        `?select=id` +
+        `&email=eq.${encodeURIComponent(email)}` +
+        `&limit=1`;
+
+      const checkResponse = await fetch(checkUrl, {
+        method: "GET",
+
+        headers: {
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization":
+            `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+        }
+      });
+
+      if (checkResponse.ok) {
+
+        const users =
+          await checkResponse.json();
+
+        if (users.length > 0) {
+          existingUser = users[0];
+        }
+      }
+    }
+
+
+    // If email did not find user, check phone
+    if (!existingUser && phone) {
+
+      const checkUrl =
+        `${SUPABASE_URL}/rest/v1/tutor_users` +
+        `?select=id` +
+        `&phone=eq.${encodeURIComponent(phone)}` +
+        `&limit=1`;
+
+      const checkResponse = await fetch(checkUrl, {
+        method: "GET",
+
+        headers: {
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization":
+            `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+        }
+      });
+
+      if (checkResponse.ok) {
+
+        const users =
+          await checkResponse.json();
+
+        if (users.length > 0) {
+          existingUser = users[0];
+        }
+      }
+    }
+
+
+    // ---------------------------------
+    // Do not create duplicate user
+    // ---------------------------------
+
+    if (existingUser) {
+
+      console.log(
+        "Tutor user already exists."
+      );
+
+      return;
+    }
+
+
+    // ---------------------------------
+    // Save new user
+    // ---------------------------------
 
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/tutor_users`,
       {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
-          "apikey": SUPABASE_SERVICE_ROLE_KEY,
-          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          "Prefer": "return=minimal"
+
+          "apikey":
+            SUPABASE_SERVICE_ROLE_KEY,
+
+          "Authorization":
+            `Bearer ${SUPABASE_SERVICE_ROLE_KEY`,
+
+          "Prefer":
+            "return=minimal"
         },
+
         body: JSON.stringify({
+
           name: name || null,
+
           phone: phone || null,
+
           email: email || null
+
         })
       }
     );
 
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Supabase Save Error:", errorText);
+
+      const errorText =
+        await response.text();
+
+      console.error(
+        "Supabase Save Error:",
+        errorText
+      );
+
+    } else {
+
+      console.log(
+        "New Tutor User Saved Successfully."
+      );
+
     }
+
+
   } catch (error) {
-    console.error("Supabase Connection Error:", error);
+
+    console.error(
+      "Supabase Connection Error:",
+      error
+    );
+
   }
 }
+
+
+
+// =====================================
+// INSTITUTE INFORMATION
+// =====================================
+
 const instituteInfo = `
 You are "Su-Srujan AI Tutor", the friendly AI assistant for
 Su-Srujan Computer Education.
@@ -204,15 +347,52 @@ AI BEHAVIOUR:
 17. Be natural, friendly, encouraging and student-focused. The goal is to help the student learn and, when appropriate, guide them toward joining Su-Srujan Computer Education.
 `;
 
-app.post("/api/chat", async (req, res) => {
-  try {
-    const userMessage = req.body.message;
 
+// =====================================
+// AI TUTOR CHAT API
+// =====================================
+
+app.post("/api/chat", async (req, res) => {
+
+  try {
+
+    const userMessage =
+      req.body.message;
+
+    const name =
+      req.body.name;
+
+    const phone =
+      req.body.phone;
+
+    const email =
+      req.body.email;
+
+
+    // Check message
     if (!userMessage) {
+
       return res.status(400).json({
         error: "Message is required"
       });
+
     }
+
+
+    // ---------------------------------
+    // SAVE USER DETAILS TO SUPABASE
+    // ---------------------------------
+
+    await saveTutorUser(
+      name,
+      phone,
+      email
+    );
+
+
+    // ---------------------------------
+    // AI PROMPT
+    // ---------------------------------
 
     const prompt = `
 ${instituteInfo}
@@ -230,136 +410,296 @@ Remember:
 - Recommend Su-Srujan only when relevant.
 `;
 
+
+    // ---------------------------------
+    // GEMINI MODELS
+    // ---------------------------------
+
     const models = [
-  "gemini-3.7-flash",
-  "gemini-3.6-flash",
-  "gemini-3.5-flash",
-  "gemini-2.5-flash"
-];
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-2.5-flash"
+    ];
 
-let response = null;
-let lastError = null;
 
-for (const model of models) {
-  try {
-    console.log(`Trying Gemini model: ${model}`);
+    let response = null;
+    let lastError = null;
 
-    response = await ai.models.generateContent({
-      model: model,
-      contents: prompt
-    });
 
-    console.log(`Gemini success with: ${model}`);
-    break;
+    for (const model of models) {
 
-  } catch (error) {
-    lastError = error;
+      try {
 
-    console.error(`Gemini ${model} failed:`, error);
+        console.log(
+          `Trying Gemini model: ${model}`
+        );
 
-    const errorText = String(error?.message || error);
 
-    if (
-      !errorText.includes("503") &&
-      !errorText.includes("UNAVAILABLE")
-    ) {
-      throw error;
+        response =
+          await ai.models.generateContent({
+            model: model,
+            contents: prompt
+          });
+
+
+        console.log(
+          `Gemini success with: ${model}`
+        );
+
+
+        break;
+
+
+      } catch (error) {
+
+        lastError = error;
+
+
+        console.error(
+          `Gemini ${model} failed:`,
+          error
+        );
+
+
+        const errorText =
+          String(
+            error?.message || error
+          );
+
+
+        if (
+          !errorText.includes("503") &&
+          !errorText.includes("UNAVAILABLE")
+        ) {
+
+          throw error;
+
+        }
+
+      }
+
     }
-  }
-}
 
-if (!response) {
-  throw lastError;
-}
+
+    if (!response) {
+
+      throw lastError;
+
+    }
+
+
+    // ---------------------------------
+    // SEND AI RESPONSE
+    // ---------------------------------
 
     res.json({
       reply: response.text
     });
 
-  } catch (error) {
-    console.error("Gemini Error:", error);
-
-    res.status(500).json({
-      error: "AI Tutor could not respond right now."
-    });
-  }
-});
-// YouTube Latest Videos API
-app.get("/api/youtube-videos", async (req, res) => {
-  try {
-    const apiKey = process.env.YOUTUBE_API_KEY;
-
-    if (!apiKey) {
-      return res.status(500).json({
-        error: "YouTube API key is missing."
-      });
-    }
-
-    // Get channel information and uploads playlist
-    const channelUrl =
-      "https://www.googleapis.com/youtube/v3/channels" +
-      "?part=contentDetails" +
-      "&forHandle=@SuSrujanMuraripur" +
-      "&key=" + encodeURIComponent(apiKey);
-
-    const channelResponse = await fetch(channelUrl);
-    const channelData = await channelResponse.json();
-
-    if (!channelResponse.ok || !channelData.items?.length) {
-      console.error("YouTube Channel Error:", channelData);
-
-      return res.status(500).json({
-        error: "YouTube channel could not be found."
-      });
-    }
-
-    const uploadsPlaylistId =
-      channelData.items[0].contentDetails.relatedPlaylists.uploads;
-
-    // Get latest uploaded videos
-    const videosUrl =
-      "https://www.googleapis.com/youtube/v3/playlistItems" +
-      "?part=snippet,contentDetails" +
-      "&playlistId=" + encodeURIComponent(uploadsPlaylistId) +
-      "&maxResults=3" +
-      "&key=" + encodeURIComponent(apiKey);
-
-    const videosResponse = await fetch(videosUrl);
-    const videosData = await videosResponse.json();
-
-    if (!videosResponse.ok) {
-      console.error("YouTube Videos Error:", videosData);
-
-      return res.status(500).json({
-        error: "YouTube videos could not be loaded."
-      });
-    }
-
-    const videos = (videosData.items || []).map(item => ({
-      videoId: item.contentDetails.videoId,
-      title: item.snippet.title,
-      description: item.snippet.description,
-      thumbnail:
-        item.snippet.thumbnails?.high?.url ||
-        item.snippet.thumbnails?.medium?.url ||
-        item.snippet.thumbnails?.default?.url,
-      publishedAt: item.snippet.publishedAt
-    }));
-
-    res.json({ videos });
 
   } catch (error) {
-    console.error("YouTube API Error:", error);
+
+    console.error(
+      "Gemini Error:",
+      error
+    );
+
 
     res.status(500).json({
-      error: "YouTube videos could not be loaded."
+      error:
+        "AI Tutor could not respond right now."
     });
-  }
-});
-app.use(express.static(path.join(__dirname, "..")));
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `Su-Srujan AI Tutor running at http://localhost:${PORT}`
-  );
+  }
+
 });
+
+
+
+// =====================================
+// YOUTUBE LATEST VIDEOS API
+// =====================================
+
+app.get(
+  "/api/youtube-videos",
+  async (req, res) => {
+
+    try {
+
+      const apiKey =
+        process.env.YOUTUBE_API_KEY;
+
+
+      if (!apiKey) {
+
+        return res.status(500).json({
+          error:
+            "YouTube API key is missing."
+        });
+
+      }
+
+
+      // ---------------------------------
+      // Get channel information
+      // ---------------------------------
+
+      const channelUrl =
+        "https://www.googleapis.com/youtube/v3/channels" +
+        "?part=contentDetails" +
+        "&forHandle=@SuSrujanMuraripur" +
+        "&key=" +
+        encodeURIComponent(apiKey);
+
+
+      const channelResponse =
+        await fetch(channelUrl);
+
+
+      const channelData =
+        await channelResponse.json();
+
+
+      if (
+        !channelResponse.ok ||
+        !channelData.items?.length
+      ) {
+
+        console.error(
+          "YouTube Channel Error:",
+          channelData
+        );
+
+
+        return res.status(500).json({
+          error:
+            "YouTube channel could not be found."
+        });
+
+      }
+
+
+      const uploadsPlaylistId =
+        channelData.items[0]
+          .contentDetails
+          .relatedPlaylists
+          .uploads;
+
+
+      // ---------------------------------
+      // Get latest uploaded videos
+      // ---------------------------------
+
+      const videosUrl =
+        "https://www.googleapis.com/youtube/v3/playlistItems" +
+        "?part=snippet,contentDetails" +
+        "&playlistId=" +
+        encodeURIComponent(
+          uploadsPlaylistId
+        ) +
+        "&maxResults=3" +
+        "&key=" +
+        encodeURIComponent(apiKey);
+
+
+      const videosResponse =
+        await fetch(videosUrl);
+
+
+      const videosData =
+        await videosResponse.json();
+
+
+      if (!videosResponse.ok) {
+
+        console.error(
+          "YouTube Videos Error:",
+          videosData
+        );
+
+
+        return res.status(500).json({
+          error:
+            "YouTube videos could not be loaded."
+        });
+
+      }
+
+
+      const videos =
+        (videosData.items || [])
+          .map(item => ({
+
+            videoId:
+              item.contentDetails.videoId,
+
+            title:
+              item.snippet.title,
+
+            description:
+              item.snippet.description,
+
+            thumbnail:
+              item.snippet.thumbnails?.high?.url ||
+              item.snippet.thumbnails?.medium?.url ||
+              item.snippet.thumbnails?.default?.url,
+
+            publishedAt:
+              item.snippet.publishedAt
+
+          }));
+
+
+      res.json({
+        videos
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "YouTube API Error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "YouTube videos could not be loaded."
+      });
+
+    }
+
+  }
+);
+
+
+
+// =====================================
+// SERVE WEBSITE
+// =====================================
+
+app.use(
+  express.static(
+    path.join(__dirname, "..")
+  )
+);
+
+
+
+// =====================================
+// START SERVER
+// =====================================
+
+app.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
+
+    console.log(
+      `Su-Srujan AI Tutor running at http://localhost:${PORT}`
+    );
+
+  }
+);
