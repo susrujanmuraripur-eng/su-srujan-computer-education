@@ -139,8 +139,7 @@ async function saveTutorUser(name, phone, email) {
             SUPABASE_SERVICE_ROLE_KEY,
 
           "Authorization":
-            `Bearer ${SUPABASE_SERVICE_ROLE_KEY`,
-
+  `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
           "Prefer":
             "return=minimal"
         },
