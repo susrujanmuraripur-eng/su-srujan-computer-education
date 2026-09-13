@@ -23,43 +23,22 @@ function closeTutor() {
 // ===============================
 
 async function askTutor() {
-
-  // Check if student details are already saved
-  let tutorUser = JSON.parse(localStorage.getItem("tutorUser"));
-
-  // If details are not saved, ask for them
-  if (!tutorUser) {
-
-    const name = prompt("Please enter your Name:");
-
-    if (!name) return;
-
-    const phone = prompt("Please enter your Phone Number:");
-
-    if (!phone) return;
-
-    const email = prompt("Please enter your Email:");
-
-    if (!email) return;
-
-    tutorUser = {
-      name: name.trim(),
-      phone: phone.trim(),
-      email: email.trim()
-    };
-
-    // Save details in browser
-    localStorage.setItem(
-      "tutorUser",
-      JSON.stringify(tutorUser)
-    );
-  }
-
   const input = document.getElementById("question");
   const question = input.value.trim();
 
   if (!question) return;
 
+  // Get saved student details
+  const savedUser = localStorage.getItem("tutorUser");
+  let tutorUser = null;
+
+  if (savedUser) {
+    try {
+      tutorUser = JSON.parse(savedUser);
+    } catch (error) {
+      localStorage.removeItem("tutorUser");
+    }
+  }
 
   // Show student's question
   chat.insertAdjacentHTML(
@@ -69,7 +48,6 @@ async function askTutor() {
 
   input.value = "";
 
-
   // Show thinking message
   chat.insertAdjacentHTML(
     "beforeend",
@@ -77,7 +55,6 @@ async function askTutor() {
   );
 
   chat.scrollTop = chat.scrollHeight;
-
 
   try {
 
@@ -89,21 +66,18 @@ async function askTutor() {
       },
 
       body: JSON.stringify({
-
         message: question,
 
-        name: tutorUser.name,
+        name: tutorUser?.name || null,
 
-        phone: tutorUser.phone,
+        phone: tutorUser?.phone || null,
 
-        email: tutorUser.email
-
+        email: tutorUser?.email || null
       })
     });
 
 
     const data = await response.json();
-
 
     const messages =
       chat.querySelectorAll(".msg.bot");
@@ -125,53 +99,51 @@ async function askTutor() {
     }
 
 
-    // ===============================
-    // WHATSAPP ADMISSION BUTTON
-    // ===============================
+    // ---------------------------------
+    // Show optional contact form
+    // ---------------------------------
 
-    const q = question.toLowerCase();
+    const q =
+      question.toLowerCase();
 
 
-    if (
+    const interested =
       q.includes("admission") ||
       q.includes("join") ||
       q.includes("enroll") ||
-      q.includes("admission lena") ||
+      q.includes("fee") ||
+      q.includes("fees") ||
+      q.includes("course") ||
+      q.includes("course lena") ||
+      q.includes("course karna") ||
       q.includes("join karna") ||
-      q.includes("join kariba") ||
-      q.includes("join karibi") ||
-      q.includes("join karibaku") ||
+      q.includes("admission lena") ||
       q.includes("admission nebaku") ||
       q.includes("admission nebi") ||
       q.includes("admission naba") ||
-      q.includes("course re padhibi") ||
-      q.includes("course re padh")
-    ) {
+      q.includes("course re padhibi");
 
-      chat.insertAdjacentHTML(
-        "beforeend",
-        `
-        <div class="msg bot">
 
-          <button
-            onclick="openAdmissionWhatsApp()"
-            style="
-              background:#25D366;
-              color:white;
-              border:0;
-              padding:12px 16px;
-              border-radius:10px;
-              font-weight:bold;
-              cursor:pointer;
-              width:100%;
-            "
-          >
-            📲 WhatsApp Admission Enquiry
-          </button>
+    // Only show form if details are not already saved
+    if (interested && !tutorUser) {
 
-        </div>
-        `
-      );
+      const contactForm =
+        document.getElementById(
+          "tutorContactForm"
+        );
+
+      if (contactForm) {
+
+        contactForm.style.display =
+          "block";
+
+        contactForm.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
+
+      }
+
     }
 
 
@@ -190,17 +162,139 @@ async function askTutor() {
       messages[messages.length - 1];
 
 
-    if (thinkingMessage) {
+    thinkingMessage.textContent =
+      "⚠️ AI Tutor se connection nahi ho pa raha. Please try again.";
 
-      thinkingMessage.textContent =
-        "⚠️ AI Tutor se connection nahi ho pa raha. Please try again.";
-
-    }
   }
 
 
   chat.scrollTop =
     chat.scrollHeight;
+}
+
+
+// =================================
+// SAVE TUTOR DETAILS
+// =================================
+
+async function saveTutorDetails() {
+
+  const name =
+    document.getElementById("tutorName")
+      .value.trim();
+
+  const phone =
+    document.getElementById("tutorPhone")
+      .value.trim();
+
+  const email =
+    document.getElementById("tutorEmail")
+      .value.trim();
+
+
+  // Name and phone are required only
+  // when student chooses Continue
+
+  if (!name) {
+
+    alert("Please enter your name.");
+
+    return;
+  }
+
+
+  if (!phone) {
+
+    alert("Please enter your phone number.");
+
+    return;
+  }
+
+
+  const tutorUser = {
+    name: name,
+    phone: phone,
+    email: email
+  };
+
+
+  // Save in browser
+  localStorage.setItem(
+    "tutorUser",
+    JSON.stringify(tutorUser)
+  );
+
+
+  // Hide contact form
+  hideTutorContactForm();
+
+
+  // Send details to backend
+  try {
+
+    await fetch("/api/chat", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+
+        message:
+          "Student shared contact details.",
+
+        name: name,
+
+        phone: phone,
+
+        email: email
+
+      })
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Could not save tutor details:",
+      error
+    );
+
+  }
+
+
+  // Focus chat box
+  document
+    .getElementById("question")
+    .focus();
+}
+
+
+// =================================
+// MAYBE LATER
+// =================================
+
+function hideTutorContactForm() {
+
+  const contactForm =
+    document.getElementById(
+      "tutorContactForm"
+    );
+
+
+  if (contactForm) {
+
+    contactForm.style.display =
+      "none";
+
+  }
+
+
+  document
+    .getElementById("question")
+    .focus();
 }
 
 
