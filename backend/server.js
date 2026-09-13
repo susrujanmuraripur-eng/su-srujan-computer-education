@@ -673,7 +673,38 @@ app.get(
   }
 );
 
+// ========================================
+// ADMIN LOGIN
+// ========================================
 
+const ADMIN_ID = process.env.ADMIN_ID;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+app.post("/api/admin-login", (req, res) => {
+  const { adminId, password } = req.body;
+
+  if (!adminId || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Admin ID and Password are required."
+    });
+  }
+
+  if (
+    adminId === ADMIN_ID &&
+    password === ADMIN_PASSWORD
+  ) {
+    return res.json({
+      success: true,
+      message: "Login successful."
+    });
+  }
+
+  return res.status(401).json({
+    success: false,
+    message: "Invalid Admin ID or Password."
+  });
+});
 
 // =====================================
 // SERVE WEBSITE
