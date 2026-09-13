@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Su-Srujan Admin Panel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #087fa5, #0b9ac3);
+      color: white;
+      padding: 22px 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+    }
+
+    .header h1 {
+      font-size: 25px;
+    }
+
+    .header p {
+      margin-top: 5px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      background: white;
+      color: #087fa5;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout-btn:hover {
+      background: #eaf8fc;
+    }
+
+    /* MAIN */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* CARDS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      border-left: 5px solid #0b8db2;
+    }
+
+    .stat-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .stat-title {
+      color: #687386;
+      font-size: 14px;
+    }
+
+    .stat-number {
+      font-size: 30px;
+      font-weight: bold;
+      margin-top: 5px;
+      color: #172033;
+    }
+
+    /* SECTION */
+    .section {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    .section-title {
+      font-size: 21px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    /* TABLE */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th {
+      background: #eef7fa;
+      color: #315365;
+      text-align: left;
+      padding: 13px;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #e7edf2;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #fafcfd;
+    }
+
+    /* STATUS */
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #e5f8ed;
+      color: #16834c;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* CHAT */
+    .chat-box {
+      border: 1px solid #e1e8ee;
+      border-radius: 10px;
+      padding: 17px;
+      margin-bottom: 12px;
+      background: #fbfdff;
+    }
+
+    .chat-user {
+      font-weight: bold;
+      color: #087fa5;
+      margin-bottom: 8px;
+    }
+
+    .question {
+      background: #eef5f8;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 7px;
+    }
+
+    .reply {
+      background: #f4f7fb;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .time {
+      color: #8a96a5;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      color: #8a96a5;
+      padding: 30px;
+    }
+
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #687386;
+    }
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        padding: 18px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .header p {
+        font-size: 12px;
+      }
+
+      .logout-btn {
+        padding: 8px 12px;
+      }
+
+      .container {
+        margin: 20px auto;
+        padding: 0 12px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <div>
+      <h1>🎓 Su-Srujan Admin Panel</h1>
+      <p>Computer Education Control Panel</p>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">
+      🚪 Logout
+    </button>
+
+  </header>
+
+
+  <main class="container">
+
+    <!-- STATISTICS -->
+    <div class="stats">
+
+      <div class="stat-card">
+        <div class="stat-icon">🔔</div>
+        <div class="stat-title">New Chats</div>
+        <div class="stat-number" id="chatCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-title">Tutor Users</div>
+        <div class="stat-number" id="userCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📩</div>
+        <div class="stat-title">Enquiries</div>
+        <div class="stat-number" id="enquiryCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💻</div>
+        <div class="stat-title">AI Tutor</div>
+        <div class="stat-number">ON</div>
+      </div>
+
+    </div>
+
+
+    <!-- TUTOR USERS -->
+    <section class="section">
+
+      <div class="section-title">
+        👥 Tutor Users
+      </div>
+
+      <div id="usersLoading" class="loading">
+        Loading users...
+      </div>
+
+      <div class="table-wrapper">
+
+        <table id="usersTable" style="display:none;">
+
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+
+          <tbody id="usersBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- AI TUTOR CHATS -->
+    <section class="section">
+
+      <div class="section-title">
+        💬 Recent AI Tutor Chats
+      </div>
+
+      <div id="chatsLoading" class="loading">
+        Loading chats...
+      </div>
+
+      <div id="chatsContainer"></div>
+
+    </section>
+
+
+    <!-- ENQUIRIES -->
+    <section class="section">
+
+      <div class="section-title">
+        📩 Recent Enquiries
+      </div>
+
+      <div id="enquiriesLoading" class="loading">
+        Loading enquiries...
+      </div>
+
+      <div class="table-wrapper">
+
+        <table id="enquiriesTable" style="display:none;">
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Course</th>
+              <th>Message</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="enquiriesBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    /* ================================
+       LOAD ADMIN DATA
+    ================================= */
+
+    async function loadDashboard() {
+
+      await loadUsers();
+
+      await loadChats();
+
+      await loadEnquiries();
+
+    }
+
+
+    /* ================================
+       LOAD USERS
+    ================================= */
+
+    async function loadUsers() {
+
+      try {
+
+        const response = await fetch("/api/admin-users");
+
+        const data = await response.json();
+
+        const users = data.users || [];
+
+        document.getElementById("userCount").textContent = users.length;
+
+        const body = document.getElementById("usersBody");
+
+        body.innerHTML = "";
+
+        if (users.length === 0) {
+
+          body.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty">
+                No tutor users yet.
+              </td>
+            </tr>
+          `;
+
+        } else {
+
+          users.forEach(user => {
+
+            const date = user.created_at
+              ? new Date(user.created_at).toLocaleString()
+              : "-";
+
+            body.innerHTML += `
+
+              <tr>
+
+                <td>${escapeHtml(String(user.id || "-"))}</td>
+
+                <td>${escapeHtml(user.name || "-")}</td>
+
+                <td>${escapeHtml(user.phone || "-")}</td>
+
+                <td>${escapeHtml(user.email || "-")}</td>
+
+                <td>${escapeHtml(date)}</td>
+
+              </tr>
+
+            `;
+
+          });
+
+        }
+
+        document.getElementById("usersLoading").style.display = "none";
+
+        document.getElementById("usersTable").style.display = "table";
+
+      } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("usersLoading").textContent =
+          "Unable to load users.";
+
+      }
+
+    }
+
+
+    /* ================================
+       LOAD CHATS
+    ================================= */
+
+    async function loadChats() {
+
+      try {
+
+        const response = await fetch("/api/admin-chats");
+
+        const data = await response.json();
+
+        const chats = data.chats || [];
+
+        document.getElementById("chatCount").textContent = chats.length;
+
+        const container =
+          document.getElementById("chatsContainer");
+
+        container.innerHTML = "";
+
+        if (chats.length === 0) {
+
+          container.innerHTML = `
+            <div class="empty">
+              No AI Tutor chats yet.
+            </div>
+          `;
+
+        } else {
+
+          chats.forEach(chat => {
+
+            const date = chat.created_at
+              ? new Date(chat.created_at).toLocaleString()
+              : "-";
+
+            container.innerHTML += `
+
+              <div class="chat-box">
+
+                <div class="chat-user">
+                  🟢 ${escapeHtml(chat.name || "Student")}
+                </div>
+
+                <div class="question">
+                  <strong>Question:</strong>
+                  ${escapeHtml(chat.question || "-")}
+                </div>
+
+                <div class="reply">
+                  <strong>AI Tutor:</strong>
+                  ${escapeHtml(chat.reply || "-")}
+                </div>
+
+                <div class="time">
+                  🕐 ${escapeHtml(date)}
+                </div>
+
+              </div>
+
+            `;
+
+          });
+
+        }
+
+        document.getElementById("chatsLoading").style.display = "none";
+
+      } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("chatsLoading").textContent =
+          "Unable to load chats.";
+
+      }
+
+    }
+
+
+    /* ================================
+       LOAD ENQUIRIES
+    ================================= */
+
+    async function loadEnquiries() {
+
+      try {
+
+        const response = await fetch("/api/admin-enquiries");
+
+        const data = await response.json();
+
+        const enquiries = data.enquiries || [];
+
+        document.getElementById("enquiryCount").textContent =
+          enquiries.length;
+
+        const body =
+          document.getElementById("enquiriesBody");
+
+        body.innerHTML = "";
+
+        if (enquiries.length === 0) {
+
+          body.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty">
+                No enquiries yet.
+              </td>
+            </tr>
+          `;
+
+        } else {
+
+          enquiries.forEach(enquiry => {
+
+            body.innerHTML += `
+
+              <tr>
+
+                <td>${escapeHtml(enquiry.name || "-")}</td>
+
+                <td>${escapeHtml(enquiry.phone || "-")}</td>
+
+                <td>${escapeHtml(enquiry.course || "-")}</td>
+
+                <td>${escapeHtml(enquiry.message || "-")}</td>
+
+                <td>
+                  <span class="status">
+                    New
+                  </span>
+                </td>
+
+              </tr>
+
+            `;
+
+          });
+
+        }
+
+        document.getElementById("enquiriesLoading").style.display =
+          "none";
+
+        document.getElementById("enquiriesTable").style.display =
+          "table";
+
+      } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("enquiriesLoading").textContent =
+          "Unable to load enquiries.";
+
+      }
+
+    }
+
+
+    /* ================================
+       LOGOUT
+    ================================= */
+
+    function logout() {
+
+      window.location.href = "/admin";
+
+    }
+
+
+    /* ================================
+       SECURITY
+    ================================= */
+
+    function escapeHtml(text) {
+
+      const div = document.createElement("div");
+
+      div.textContent = text;
+
+      return div.innerHTML;
+
+    }
+
+
+    /* ================================
+       START
+    ================================= */
+
+    loadDashboard();
+
+  </script>
+
+</body>
+</html>
