@@ -213,8 +213,58 @@
 <div id="tutor" class="tutor-overlay" aria-hidden="true">
   <div class="tutor">
     <div class="tutor-head"><div><b>🤖 Su-Srujan AI Tutor</b><small>Institute Information Assistant</small></div><button onclick="closeTutor()">✕</button></div>
-    <div id="chat" class="chat"><div class="msg bot">Namaste! 👋 I can answer questions about Su-Srujan Computer Education, courses, fees, admission, timings and facilities.</div></div>
-    <div class="chat-input"><input id="question" placeholder="Ask about courses, fees..." onkeydown="if(event.key==='Enter') askTutor()"><button onclick="askTutor()">➤</button></div>
+    <div id="chat" class="chat">
+  <div class="msg bot">
+    Namaste! 👋 I can answer questions about Su-Srujan Computer Education, courses, fees, admission, timings and facilities.
+  </div>
+</div>
+
+<div id="tutorContactForm" class="tutor-contact-form" style="display:none;">
+
+  <h3>🎓 Want More Help?</h3>
+
+  <p>
+    Share your details and our team can help you with
+    courses, fees and admission.
+  </p>
+
+  <input id="tutorName" type="text" placeholder="Your Name">
+
+  <input id="tutorPhone" type="tel" placeholder="Phone Number">
+
+  <input id="tutorEmail" type="email" placeholder="Email Address">
+
+  <div class="tutor-form-buttons">
+
+    <button
+      type="button"
+      onclick="saveTutorDetails()"
+      class="tutor-start-btn">
+      Continue
+    </button>
+
+    <button
+      type="button"
+      onclick="hideTutorContactForm()"
+      class="tutor-later-btn">
+      Maybe Later
+    </button>
+
+  </div>
+
+</div>
+
+<div class="chat-input">
+
+  <input
+    id="question"
+    placeholder="Ask about courses, fees..."
+    onkeydown="if(event.key==='Enter') askTutor()"
+  >
+
+  <button onclick="askTutor()">➤</button>
+
+</div>
   </div>
 </div>
 
