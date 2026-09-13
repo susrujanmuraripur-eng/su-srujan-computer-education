@@ -264,3 +264,99 @@
     min-height: auto;
   }
 }
+/* =================================
+   AI TUTOR CONTACT FORM
+   ================================= */
+
+.tutor-contact-form {
+  padding: 20px;
+  background: #ffffff;
+  border-top: 1px solid #e5eaf0;
+}
+
+.tutor-contact-form h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  color: #172033;
+}
+
+.tutor-contact-form p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.tutor-contact-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  margin: 5px 0;
+  border: 1px solid #d7e0ea;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #172033;
+  font: inherit;
+  outline: none;
+}
+
+.tutor-contact-form input:focus {
+  border-color: #087ea4;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(8, 126, 164, 0.10);
+}
+
+.tutor-form-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tutor-start-btn,
+.tutor-later-btn {
+  flex: 1;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.tutor-start-btn {
+  border: 0;
+  background: #087ea4;
+  color: #fff;
+}
+
+.tutor-start-btn:hover {
+  background: #066b8b;
+  transform: translateY(-1px);
+}
+
+.tutor-later-btn {
+  border: 1px solid #d7e0ea;
+  background: #fff;
+  color: #526176;
+}
+
+.tutor-later-btn:hover {
+  background: #f5f8fb;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+
+  .tutor-contact-form {
+    padding: 15px;
+  }
+
+  .tutor-form-buttons {
+    flex-direction: column;
+  }
+
+  .tutor-start-btn,
+  .tutor-later-btn {
+    width: 100%;
+  }
+}
