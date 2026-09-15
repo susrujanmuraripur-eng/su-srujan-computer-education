@@ -789,6 +789,46 @@ app.get("/api/admin-users", async (req, res) => {
     });
   }
 });
+// ADMIN AI TUTOR CHATS
+app.get("/api/admin-chats", async (req, res) => {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/tutor_chats?select=*&order=created_at.desc&limit=50`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Admin Chats Error:", errorText);
+
+      return res.status(500).json({
+        success: false,
+        chats: []
+      });
+    }
+
+    const chats = await response.json();
+
+    res.json({
+      success: true,
+      chats
+    });
+
+  } catch (error) {
+    console.error("Admin Chats Connection Error:", error);
+
+    res.status(500).json({
+      success: false,
+      chats: []
+    });
+  }
+});
 // =====================================
 // SERVE WEBSITE
 // =====================================
