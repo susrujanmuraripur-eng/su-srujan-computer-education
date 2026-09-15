@@ -706,6 +706,49 @@ app.post("/api/admin-login", (req, res) => {
   });
 });
 
+// ====================================
+// ADMIN - GET TUTOR USERS
+// ====================================
+
+app.get("/api/admin-users", async (req, res) => {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/tutor_users?select=*&order=created_at.desc`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Admin Users Error:", errorText);
+
+      return res.status(500).json({
+        success: false,
+        users: []
+      });
+    }
+
+    const users = await response.json();
+
+    res.json({
+      success: true,
+      users
+    });
+
+  } catch (error) {
+    console.error("Admin Users Connection Error:", error);
+
+    res.status(500).json({
+      success: false,
+      users: []
+    });
+  }
+});
 // =====================================
 // SERVE WEBSITE
 // =====================================
