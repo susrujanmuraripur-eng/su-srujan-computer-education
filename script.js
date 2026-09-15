@@ -349,7 +349,7 @@ function escapeHtml(text) {
 // ADMISSION FORM → WHATSAPP
 // ===============================
 
-function sendWhatsApp(event) {
+async function sendWhatsApp(event) {
 
   event.preventDefault();
 
@@ -359,6 +359,9 @@ function sendWhatsApp(event) {
 
   const phone =
     document.getElementById("phone").value;
+  
+  const email =
+  document.getElementById("email").value;
 
   const course =
     document.getElementById("course").value;
@@ -366,13 +369,27 @@ function sendWhatsApp(event) {
   const message =
     document.getElementById("message").value;
 
+  await fetch("/api/enquiries", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: name,
+    phone: phone,
+    email: email,
+    course: course,
+    message: message
+  })
+});
 
   const text =
     `Admission Enquiry - Su-Srujan Computer Education\n` +
     `Name: ${name}\n` +
     `Phone: ${phone}\n` +
-    `Course: ${course}\n` +
-    `Message: ${message}`;
+   `Course: ${course}\n` +
+`Email: ${email}\n` +
+`Message: ${message}`;
 
 
   window.open(
