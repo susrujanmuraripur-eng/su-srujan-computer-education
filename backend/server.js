@@ -734,10 +734,19 @@ app.post("/api/admin-login", (req, res) => {
     adminId === ADMIN_ID &&
     password === ADMIN_PASSWORD
   ) {
-    return res.json({
-      success: true,
-      message: "Login successful."
-    });
+   const token = require("crypto").randomBytes(32).toString("hex");
+
+adminSessions.add(token);
+
+res.setHeader(
+  "Set-Cookie",
+  `adminToken=${token}; HttpOnly; Path=/; SameSite=Strict`
+);
+
+return res.json({
+  success: true,
+  message: "Login successful."
+});
   }
 
   return res.status(401).json({
@@ -746,11 +755,30 @@ app.post("/api/admin-login", (req, res) => {
   });
 });
 
+// ADMIN AUTH PROTECTION
+const adminSessions = new Set();
+
+function requireAdmin(req, res, next) {
+  const cookie = req.headers.cookie || "";
+  const token = cookie
+    .split(";")
+    .find(item => item.trim().startsWith("adminToken="))
+    ?.split("=")[1];
+
+  if (!token || !adminSessions.has(token)) {
+    return res.status(401).json({
+      success: false,
+      message: "Admin login required."
+    });
+  }
+
+  next();
+}
 // ====================================
 // ADMIN - GET TUTOR USERS
 // ====================================
 
-app.get("/api/admin-users", async (req, res) => {
+app.get("/api/admin-users", requireAdmin, async (req, res) => {
   try {
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/tutor_users?select=*&order=created_at.desc`,
@@ -790,7 +818,7 @@ app.get("/api/admin-users", async (req, res) => {
   }
 });
 // ADMIN AI TUTOR CHATS
-app.get("/api/admin-chats", async (req, res) => {
+app.get("/api/admin-chats", requireAdmin, async (req, res) => {
   try {
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/tutor_chats?select=*&order=created_at.desc&limit=50`,
@@ -830,7 +858,7 @@ app.get("/api/admin-chats", async (req, res) => {
   }
 });
 // ADMIN ENQUIRIES
-app.get("/api/admin-enquiries", async (req, res) => {
+app.get("/api/admin-enquiries", requireAdmin, async (req, res) => {
   try {
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/enquiries?select=*&order=created_at.desc&limit=50`,
