@@ -869,6 +869,52 @@ app.get("/api/admin-enquiries", async (req, res) => {
     });
   }
 });
+// SAVE ADMISSION ENQUIRY
+app.post("/api/enquiries", async (req, res) => {
+  try {
+    const { name, phone, email, course, message } = req.body;
+
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/enquiries`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          name: name || null,
+          phone: phone || null,
+          email: email || null,
+          course: course || null,
+          message: message || null
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Enquiry Save Error:", errorText);
+
+      return res.status(500).json({
+        success: false
+      });
+    }
+
+    res.json({
+      success: true
+    });
+
+  } catch (error) {
+    console.error("Enquiry Connection Error:", error);
+
+    res.status(500).json({
+      success: false
+    });
+  }
+});
 // =====================================
 // SERVE WEBSITE
 // =====================================
