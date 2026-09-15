@@ -829,6 +829,46 @@ app.get("/api/admin-chats", async (req, res) => {
     });
   }
 });
+// ADMIN ENQUIRIES
+app.get("/api/admin-enquiries", async (req, res) => {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/enquiries?select=*&order=created_at.desc&limit=50`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Admin Enquiries Error:", errorText);
+
+      return res.status(500).json({
+        success: false,
+        enquiries: []
+      });
+    }
+
+    const enquiries = await response.json();
+
+    res.json({
+      success: true,
+      enquiries
+    });
+
+  } catch (error) {
+    console.error("Admin Enquiries Connection Error:", error);
+
+    res.status(500).json({
+      success: false,
+      enquiries: []
+    });
+  }
+});
 // =====================================
 // SERVE WEBSITE
 // =====================================
