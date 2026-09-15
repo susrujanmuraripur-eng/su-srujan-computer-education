@@ -185,7 +185,40 @@ async function saveTutorUser(name, phone, email) {
 
   }
 }
+// Save AI Tutor Chat
+async function saveTutorChat(name, phone, email, question, reply) {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/tutor_chats`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_SERVICE_ROLE_KEY,
+          "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          name: name || null,
+          phone: phone || null,
+          email: email || null,
+          question: question,
+          reply: reply
+        })
+      }
+    );
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Tutor Chat Save Error:", errorText);
+    } else {
+      console.log("AI Tutor Chat Saved Successfully.");
+    }
+
+  } catch (error) {
+    console.error("Tutor Chat Connection Error:", error);
+  }
+}
 
 
 // =====================================
@@ -491,6 +524,13 @@ Remember:
     // ---------------------------------
     // SEND AI RESPONSE
     // ---------------------------------
+    await saveTutorChat(
+  name,
+  phone,
+  email,
+  userMessage,
+  response.text
+);
 
     res.json({
       reply: response.text
