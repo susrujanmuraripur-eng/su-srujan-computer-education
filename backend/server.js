@@ -947,6 +947,10 @@ app.post("/api/enquiries", async (req, res) => {
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "admin.html"));
 });
+// PROTECT ADMIN DASHBOARD
+app.get("/admin-dashboard.html", requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "admin-dashboard.html"));
+});
 // =====================================
 // SERVE WEBSITE
 // =====================================
