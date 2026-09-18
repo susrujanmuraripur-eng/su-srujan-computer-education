@@ -662,6 +662,11 @@
 
     loadDashboard();
 
+    // AUTO REFRESH DASHBOARD
+setInterval(() => {
+  loadDashboard();
+}, 30000);
+
   </script>
 
 </body>
