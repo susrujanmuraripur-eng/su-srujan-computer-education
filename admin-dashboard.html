@@ -630,11 +630,15 @@
        LOGOUT
     ================================= */
 
-    function logout() {
+    async function logout() {
 
-      window.location.href = "/admin";
+    await fetch("/api/admin-logout", {
+        method: "POST"
+    });
 
-    }
+    window.location.href = "/admin";
+
+}
 
 
     /* ================================
