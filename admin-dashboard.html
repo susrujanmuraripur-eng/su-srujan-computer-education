@@ -468,7 +468,7 @@
     /* ================================
        LOAD CHATS
     ================================= */
-
+let previousChatCount = null;
     async function loadChats() {
 
       try {
@@ -480,6 +480,13 @@
         const chats = data.chats || [];
 
         document.getElementById("chatCount").textContent = chats.length;
+
+        // NEW CHAT NOTIFICATION
+if (previousChatCount !== null && chats.length > previousChatCount) {
+  alert("🔔 New AI Tutor Chat received!");
+}
+
+previousChatCount = chats.length;
 
         const container =
           document.getElementById("chatsContainer");
