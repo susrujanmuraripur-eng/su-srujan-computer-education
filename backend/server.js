@@ -755,6 +755,29 @@ return res.json({
   });
 });
 
+// ADMIN LOGOUT
+app.post("/api/admin-logout", (req, res) => {
+  const cookie = req.headers.cookie || "";
+
+  const token = cookie
+    .split(";")
+    .find(item => item.trim().startsWith("adminToken="))
+    ?.split("=")[1];
+
+  if (token) {
+    adminSessions.delete(token);
+  }
+
+  res.setHeader(
+    "Set-Cookie",
+    "adminToken=; HttpOnly; Path=/; SameSite=Strict; Max-Age=0"
+  );
+
+  res.json({
+    success: true,
+    message: "Logged out successfully."
+  });
+});
 // ADMIN AUTH PROTECTION
 const adminSessions = new Set();
 
