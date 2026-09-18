@@ -943,6 +943,10 @@ app.post("/api/enquiries", async (req, res) => {
     });
   }
 });
+// ADMIN LOGIN PAGE
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "admin.html"));
+});
 // =====================================
 // SERVE WEBSITE
 // =====================================
