@@ -971,8 +971,21 @@ app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "admin.html"));
 });
 // PROTECT ADMIN DASHBOARD
-app.get("/admin-dashboard.html", requireAdmin, (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "admin-dashboard.html"));
+app.get("/admin-dashboard.html", (req, res) => {
+  const cookie = req.headers.cookie || "";
+
+  const token = cookie
+    .split(";")
+    .find(item => item.trim().startsWith("adminToken="))
+    ?.split("=")[1];
+
+  if (!token || !adminSessions.has(token)) {
+    return res.redirect("/admin");
+  }
+
+  res.sendFile(
+    path.join(__dirname, "..", "admin-dashboard.html")
+  );
 });
 // =====================================
 // SERVE WEBSITE
