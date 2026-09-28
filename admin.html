@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Su-Srujan Admin Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #eaf7fb, #f5f8ff);
+    }
+
+    .login-card {
+      width: 390px;
+      max-width: 92%;
+      background: #ffffff;
+      padding: 40px 35px;
+      border-radius: 20px;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.12);
+      text-align: center;
+    }
+
+    .logo {
+      width: 75px;
+      height: 75px;
+      object-fit: contain;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      color: #12304a;
+      font-size: 25px;
+      margin-bottom: 7px;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .input-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 7px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d6dee8;
+      border-radius: 10px;
+      outline: none;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: #0b8bb5;
+      box-shadow: 0 0 0 3px rgba(11, 139, 181, 0.12);
+    }
+
+    .login-btn {
+      width: 100%;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      background: #0b8bb5;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 5px;
+      transition: 0.2s;
+    }
+
+    .login-btn:hover {
+      background: #08799d;
+    }
+
+    .login-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .message {
+      min-height: 22px;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 22px;
+      color: #0b8bb5;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .security {
+      margin-top: 25px;
+      padding-top: 18px;
+      border-top: 1px solid #edf1f5;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-card">
+
+    <img src="logo.jpg" class="logo" alt="Su-Srujan Computer Education">
+
+    <h1>Su-Srujan Admin Panel</h1>
+
+    <p class="subtitle">
+      Secure Administrator Login
+    </p>
+
+    <form id="loginForm">
+
+      <div class="input-group">
+        <label for="adminId">Admin ID</label>
+        <input
+          type="text"
+          id="adminId"
+          placeholder="Enter your Admin ID"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="login-btn" id="loginBtn">
+        Login to Admin Panel
+      </button>
+
+      <div class="message" id="message"></div>
+
+    </form>
+
+    <a href="/" class="back-link">
+      ← Back to Website
+    </a>
+
+    <div class="security">
+      🔒 Authorized administrators only
+    </div>
+
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+    const message = document.getElementById("message");
+
+    loginForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const adminId = document.getElementById("adminId").value.trim();
+      const password = document.getElementById("password").value;
+
+      message.textContent = "";
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Checking...";
+
+      try {
+        const response = await fetch("/api/admin-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            adminId: adminId,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          message.style.color = "#16a34a";
+          message.textContent = "Login successful!";
+
+          setTimeout(() => {
+            window.location.href = "/admin-dashboard.html";
+          }, 500);
+        } else {
+          message.style.color = "#dc2626";
+          message.textContent = data.message || "Invalid login details.";
+        }
+
+      } catch (error) {
+        message.style.color = "#dc2626";
+        message.textContent = "Unable to connect. Please try again.";
+      }
+
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Login to Admin Panel";
+    });
+  </script>
+
+</body>
+</html>
